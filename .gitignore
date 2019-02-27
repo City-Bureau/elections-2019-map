@@ -1,0 +1,7 @@
+.DS_Store
+input/*
+!input/.keep
+output/*
+!output/.keep
+tiles/*
+.vscode

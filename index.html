@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chicago 2019 Election Results</title>
+    <link rel="stylesheet" type="text/css" href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css" />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js"></script>
+    <style>
+        body {
+            background: #fff;
+            color: #333;
+            font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .mapboxgl-popup {
+            min-width: 250px;
+        }
+
+        .mapboxgl-popup-content {
+            max-height: 250px;
+            overflow-y: scroll;
+        }
+
+        .popup-prop {
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+            margin-bottom: 2px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .popup-prop.area {
+            justify-content: center;
+        }
+
+        .popup-prop.area .popup-prop-value {
+            min-width: 0;
+        }
+
+        .popup-prop:last-child {
+            margin-bottom: 8px;
+        }
+
+        .popup-link {
+            width: 100%;
+        }
+
+        .popup-prop-name {
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        .popup-prop-value {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 40%;
+        }
+
+        .popup-prop-value div {
+            text-align: center;
+        }
+
+        .popup-note {
+            font-style: italic;
+        }
+
+        p {
+            margin: 0;
+            margin-bottom: 8px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        p:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .color {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: bottom;
+        }
+
+        #legend {
+            padding: 8px;
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="legend">
+        <p>
+            <label>
+                <input type="radio" name="layer" value="wards" checked> Wards
+            </label>
+        </p>
+        <p>
+            <label>
+                <input type="radio" name="layer" value="precincts"> Precincts
+            </label>
+        </p>
+        <hr />
+        <p>
+            <label>
+                <input type="checkbox" name="opacity" value="opacity"> Opacity by Pop.
+            </label>
+        </p>
+        <hr />
+        <p>
+            <span class="color" style="background-color: #e31a1c"></span>
+            <label>
+                <input type="checkbox" name="candidate" checked data-prop="lightfoot" />
+                Lightfoot
+            </label>
+        </p>
+        <p>
+            <span class="color" style="background-color: #004E87"></span>
+            <label>
+                <input type="checkbox" name="candidate" checked data-prop="preckwinkle" />
+                Preckwinkle
+            </label>
+        </p>
+        <p>
+            <span class="color" style="background-color: #ff7f00"></span>
+            <label>
+                <input type="checkbox" name="candidate" checked data-prop="daley" />
+                Daley
+            </label>
+        </p>
+        <p>
+            <span class="color" style="background-color: #33a02c"></span>
+            <label>
+                <input type="checkbox" name="candidate" checked data-prop="wilson" />
+                Wilson
+            </label>
+        </p>
+        <p>
+            <span class="color" style="background-color: #8052b2"></span>
+            <label>
+                <input type="checkbox" name="candidate" checked data-prop="mendoza" />
+                Mendoza
+            </label>
+        </p>
+        <p>
+            <span class="color" style="background-color: #F5F50A"></span>
+            <label>
+                <input type="checkbox" name="candidate" checked data-prop="joyce" />
+                Joyce
+            </label>
+        </p>
+        <p>
+            <span class="color" style="background-color: #a6cee3"></span>
+            <label>
+                <input type="checkbox" name="candidate" checked data-prop="chico" />
+                Chico
+            </label>
+        </p>
+        <p>
+            <span class="color" style="background-color: #ccc"></span>
+            <label>
+                <input type="checkbox" name="candidate" checked data-prop="other" />
+                Other
+            </label>
+        </p>
+    </div>
+    <script>
+        const candidates = [
+            {
+                label: "Lightfoot",
+                key: "lightfoot",
+                color: "#e31a1c",
+                primary: true,
+            },
+            {
+                label: "Preckwinkle",
+                key: "preckwinkle",
+                color: "#004E87",
+                primary: true,
+            },
+            {
+                label: "Daley",
+                key: "daley",
+                color: "#ff7f00",
+                primary: true,
+            },
+            {
+                label: "Wilson",
+                key: "wilson",
+                color: "#33a02c",
+                primary: true,
+            },
+            {
+                label: "Mendoza",
+                key: "mendoza",
+                color: "#8052b2",
+                primary: true,
+            },
+            {
+                label: "Joyce",
+                key: "joyce",
+                color: "#F5F50A",
+                primary: true,
+            },
+            {
+                label: "Chico",
+                key: "chico",
+                color: "#ccc",
+                primary: true,
+            },
+            {
+                label: "Enyia",
+                key: "enyia",
+                color: "#ccc",
+                primary: false,
+            },
+            {
+                label: "Vallas",
+                key: "vallas",
+                color: "#ccc",
+                primary: false,
+            },
+            {
+                label: "McCarthy",
+                key: "mccarthy",
+                color: "#ccc",
+                primary: false,
+            },
+            {
+                label: "Ford",
+                key: "ford",
+                color: "#ccc",
+                primary: false,
+            },
+            {
+                label: "Fioretti",
+                key: "fioretti",
+                color: "#ccc",
+                primary: false,
+            },
+            {
+                label: "Kozlar",
+                key: "kozlar",
+                color: "#ccc",
+                primary: false,
+            },
+            {
+                label: "Sales-Griffin",
+                key: "salesgriffin",
+                color: "#ccc",
+                primary: false,
+            },
+        ];
+        const MOBILE_BREAKPOINT = 600;
+        const map = new mapboxgl.Map({
+            container: 'map',
+            hash: true,
+            center: [-87.8255, 41.8384],
+            zoom: 9,
+            style: 'style.json',
+        });
+        map.dragRotate.disable();
+        map.touchZoomRotate.disableRotation();
+
+        map.on('load', function () {
+            map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
+
+            const hoverPopup = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false
+            });
+
+            const clickPopup = new mapboxgl.Popup({
+                closeButton: true,
+                closeOnClick: true,
+            });
+
+            function removePopup(popup) {
+                map.getCanvas().style.cursor = '';
+                popup.remove();
+            }
+
+            function popupContent(feat) {
+                let content = `<div class='popup-prop area'>
+                    <div class='popup-prop-name'>Ward</div>
+                    <div class='popup-prop-value'>${feat.properties.ward}</div>
+                </div>`;
+                if ('precinct' in feat.properties) {
+                    content += `<div class='popup-prop area'>
+                        <div class='popup-prop-name'>Precinct</div>
+                        <div class='popup-prop-value'>${feat.properties.precinct}</div>
+                    </div>`
+                }
+                return content + candidates.sort((a, b) => feat.properties[b.key] - feat.properties[a.key]).map(c =>
+                    `<div class='popup-prop'>
+                        <div class='popup-prop-name'>
+                            <span class="color" style="background-color: ${c.color}"></span>
+                            ${c.label}
+                        </div>
+                        <div class='popup-prop-value'>
+                            <div>${feat.properties[c.key].toLocaleString()}</div>
+                            <div>${feat.properties[c.key + '_pct']}%</div>
+                        </div>
+                    </div>`
+                ).join("");
+            }
+
+            function onMouseMove(e) {
+                const features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
+                if (features.length > 0 && !clickPopup.isOpen()) {
+                    map.getCanvas().style.cursor = "pointer";
+                    if (window.innerWidth >= MOBILE_BREAKPOINT) {
+                        hoverPopup.setLngLat(e.lngLat)
+                            .setHTML(popupContent(features[0]))
+                            .addTo(map);
+                    }
+                } else {
+                    removePopup(hoverPopup);
+                }
+            }
+
+            function onMouseOut(e) {
+                removePopup(hoverPopup);
+            }
+
+            function onMapClick(e) {
+                const features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
+                if (features.length > 0) {
+                    map.getCanvas().style.cursor = "pointer";
+                    clickPopup.setLngLat(e.lngLat)
+                        .setHTML(popupContent(features[0], e))
+                        .addTo(map);
+                }
+            }
+
+            map.on("mousemove", "wards", onMouseMove);
+            map.on("mouseout", "wards", onMouseOut);
+            map.on("click", "wards", onMapClick);
+            map.on("mousemove", "precincts", onMouseMove);
+            map.on("mouseout", "precincts", onMouseOut);
+            map.on("click", "precincts", onMapClick);
+        });
+
+        function getMapLayer() {
+            return document.querySelector("input[type='radio']:checked").value;
+        }
+
+        function updateMapLayer() {
+            const layer = getMapLayer();
+            const hideLayer = layer === "precincts" ? "wards" : "precincts";
+            map.setFilter(layer, null);
+            map.setFilter(hideLayer, ["has", "FAKEPROP"]);
+        }
+
+        function popOpacityScale(layer) {
+            const maxScale = layer === "wards" ? 20000 : 500;
+            const scaleOpacity = document.querySelector("input[name='opacity']").checked;
+            const fillOpacity = scaleOpacity ? ["interpolate", ["linear"], ["get", "total_votes"], 0, 0.0, maxScale, 1.0] : 0.7;
+            return fillOpacity;
+        }
+
+        function updateCheckedLayers() {
+            // Resetting entire style, otherwise errors thrown
+            let selected = [];
+            let other = true;
+            document.querySelectorAll("input[type='checkbox'][name='candidate']").forEach((el) => {
+                if (el.checked && el.dataset.prop !== "other") {
+                    selected.push(el.dataset.prop);
+                } else if (el.dataset.prop === "other") {
+                    other = el.checked;
+                }
+            });
+            if (other) {
+                selected = selected.concat(candidates.filter(c => !c.primary).map(c => c.key));
+            }
+            const style = map.getStyle();
+            style.layers.forEach((layer) => {
+                if (["wards", "precincts"].includes(layer.id)) {
+                    const expression = layer.paint['fill-color'];
+                    const newExpression = [...expression];
+                    const maxExpression = ["max"].concat(selected.map(s => ["get", s]));
+                    newExpression[2] = maxExpression;
+                    layer.paint['fill-color'] = newExpression;
+                    layer.paint['fill-opacity'] = popOpacityScale(layer.id);
+                }
+            });
+            map.setStyle({...style});
+        }
+
+        document.querySelectorAll("input[type='radio']").forEach((el) => {
+            el.addEventListener("change", () => {
+                updateMapLayer();
+                updateCheckedLayers();
+            });
+        })
+
+        document.querySelectorAll("input[type='checkbox']").forEach((el) => {
+            el.addEventListener("change", updateCheckedLayers);
+        });
+    </script>
+</body>
+
+</html>
