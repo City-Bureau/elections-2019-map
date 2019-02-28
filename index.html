@@ -380,7 +380,9 @@
         function popOpacityScale(layer) {
             const maxScale = layer === "wards" ? 20000 : 500;
             const scaleOpacity = document.querySelector("input[name='opacity']").checked;
-            const fillOpacity = scaleOpacity ? ["interpolate", ["linear"], ["get", "total_votes"], 0, 0.0, maxScale, 1.0] : 0.7;
+            const fillOpacity = scaleOpacity ?
+                ["interpolate", ["linear"], ["get", "total_votes"], 0, 0.0, maxScale, 1.0]
+                : ["case", ["==", ["get", "total_votes"], 0], 0, 0.7];
             return fillOpacity;
         }
 
