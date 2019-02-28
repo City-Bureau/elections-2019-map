@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chicago 2019 City Council Election Results</title>
+    <link rel="stylesheet" type="text/css" href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css" />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js"></script>
+    <style>
+        body {
+            background: #fff;
+            color: #333;
+            font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .mapboxgl-popup {
+            min-width: 250px;
+        }
+
+        .mapboxgl-popup-content {
+            max-height: 250px;
+            overflow-y: scroll;
+        }
+
+        .popup-prop {
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+            margin-bottom: 2px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .popup-prop.area {
+            justify-content: center;
+        }
+
+        .popup-prop.area .popup-prop-value {
+            min-width: 0;
+        }
+
+        .popup-prop:last-child {
+            margin-bottom: 8px;
+        }
+
+        .popup-link {
+            width: 100%;
+        }
+
+        .popup-prop-name {
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        .popup-prop-value {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 40%;
+        }
+
+        .popup-prop-value div {
+            text-align: center;
+        }
+
+        .popup-note {
+            font-style: italic;
+        }
+
+        p {
+            margin: 0;
+            margin-bottom: 8px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        p:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .color {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: bottom;
+        }
+
+        #legend {
+            padding: 8px;
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="legend">
+        <p>
+            <label for="ward">
+                Ward:
+            </label>
+            <select id="ward" name="ward">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+                <option value="24">24</option>
+                <option value="25">25</option>
+                <option value="26">26</option>
+                <option value="27">27</option>
+                <option value="28">28</option>
+                <option value="29">29</option>
+                <option value="30">30</option>
+                <option value="31">31</option>
+                <option value="32">32</option>
+                <option value="33">33</option>
+                <option value="34">34</option>
+                <option value="35">35</option>
+                <option value="36">36</option>
+                <option value="37">37</option>
+                <option value="38">38</option>
+                <option value="39">39</option>
+                <option value="40">40</option>
+                <option value="41">41</option>
+                <option value="42">42</option>
+                <option value="43">43</option>
+                <option value="44">44</option>
+                <option value="45">45</option>
+                <option value="46">46</option>
+                <option value="47">47</option>
+                <option value="48">48</option>
+                <option value="49">49</option>
+                <option value="50">50</option>
+            </select>
+        </p>
+        <p>
+            <label>
+                <input type="radio" name="layer" value="wards" checked> Wards
+            </label>
+        </p>
+        <p>
+            <label>
+                <input type="radio" name="layer" value="precincts"> Precincts
+            </label>
+        </p>
+        <hr />
+        <p>
+            <label>
+                <input type="checkbox" name="opacity" value="opacity"> Opacity by # Votes
+            </label>
+        </p>
+        <hr />
+        <div id="candidates"></div>
+    </div>
+    <script src="https://pym.nprapps.org/pym.v1.min.js"></script>
+    <script>
+        var pymChild = new pym.Child();
+        const WARD_CANDIDATE_MAP = {
+            "39": {
+                "robert_murphy": "ROBERT MURPHY",
+                "samantha_sam_nugent": "SAMANTHA 'SAM' NUGENT",
+                "casey_smagala": "CASEY SMAGALA",
+                "joe_duplechin": "JOE DUPLECHIN"
+            },
+            "40": {
+                "ugo_okere": "UGO OKERE",
+                "dianne_daleiden": "DIANNE DALEIDEN",
+                "andr_vasquez": "ANDR\u00c9 VASQUEZ",
+                "patrick_j_oconnor": "PATRICK J. O'CONNOR",
+                "maggie_okeefe": "MAGGIE O'KEEFE"
+            },
+            "42": {
+                "brendan_reilly": "BRENDAN REILLY"
+            },
+            "44": {
+                "tom_tunney": "TOM TUNNEY",
+                "austin_baidas": "AUSTIN BAIDAS",
+                "elizabeth_shydlowski": "ELIZABETH SHYDLOWSKI"
+            },
+            "46": {
+                "marianne_lalonde": "MARIANNE LALONDE",
+                "erika_wozniak_francis": "ERIKA WOZNIAK FRANCIS",
+                "justin_kreindler": "JUSTIN KREINDLER",
+                "james_cappleman": "JAMES CAPPLEMAN",
+                "angela_clay": "ANGELA CLAY",
+                "jonrobert_mcdowell": "JON-ROBERT MCDOWELL"
+            },
+            "50": {
+                "debra_l_silverstein": "DEBRA L. SILVERSTEIN",
+                "andrew_d_rowlas": "ANDREW D ROWLAS",
+                "zehra_quadri": "ZEHRA QUADRI"
+            },
+            "3": {
+                "patricia_pat_dowell": "PATRICIA 'PAT' DOWELL",
+                "alexandria_willis": "ALEXANDRIA WILLIS"
+            },
+            "4": {
+                "sophia_king": "SOPHIA KING",
+                "ebony_d_lucas": "EBONY D. LUCAS"
+            },
+            "5": {
+                "leslie_a_hairston": "LESLIE A. HAIRSTON",
+                "william_calloway": "WILLIAM CALLOWAY",
+                "gabriel_piemonte": "GABRIEL PIEMONTE"
+            },
+            "6": {
+                "roderick_t_sawyer": "RODERICK T. SAWYER",
+                "richard_a_wooten": "RICHARD A. WOOTEN",
+                "deborah_a_fosterbonner": "DEBORAH A. FOSTER-BONNER"
+            },
+            "7": {
+                "gregory_i_mitchell": "GREGORY I. MITCHELL",
+                "charles_kyle": "CHARLES KYLE",
+                "jedidiah_l_brown": "JEDIDIAH L. BROWN"
+            },
+            "8": {
+                "michelle_a_harris": "MICHELLE A. HARRIS",
+                "jewel_easterlingsmith": "JEWEL EASTERLING-SMITH",
+                "linda_hudson": "LINDA HUDSON",
+                "faheem_shabazz": "FAHEEM SHABAZZ"
+            },
+            "10": {
+                "susan_sadlowski_garza": "SUSAN SADLOWSKI GARZA",
+                "robert_bobby_loncar": "ROBERT 'BOBBY' LONCAR"
+            },
+            "11": {
+                "patrick_daley_thompson": "PATRICK DALEY THOMPSON",
+                "david_mihalyfy": "DAVID MIHALYFY"
+            },
+            "12": {
+                "george_cardenas": "GEORGE CARDENAS",
+                "pete_demay": "PETE DEMAY",
+                "martha_yerania_rangel": "MARTHA YERANIA RANGEL",
+                "jose_rico": "JOSE RICO"
+            },
+            "13": {
+                "marty_quinn": "MARTY QUINN",
+                "david_j_krupa": "DAVID J. KRUPA"
+            },
+            "14": {
+                "edward_m_burke": "EDWARD M. BURKE",
+                "jaime_guzman": "JAIME GUZMAN",
+                "tanya_g_patino": "TANYA G. PATINO"
+            },
+            "15": {
+                "joseph_g_williams": "JOSEPH G. WILLIAMS",
+                "rafael_rafa_yanez": "RAFAEL 'RAFA' YANEZ",
+                "raymond_a_lopez": "RAYMOND A. LOPEZ",
+                "berto_aguayo": "BERTO AGUAYO",
+                "otis_davis_jr": "OTIS DAVIS, JR."
+            },
+            "16": {
+                "stephanie_d_coleman": "STEPHANIE D. COLEMAN",
+                "latasha_m_sanders": "LATASHA M. SANDERS",
+                "kenny_c_doss_ii": "KENNY C. DOSS II",
+                "toni_l_foulkes": "TONI L. FOULKES",
+                "jeffrey_l_lewis": "JEFFREY L. LEWIS",
+                "eddie_johnson_iii": "EDDIE JOHNSON III"
+            },
+            "17": {
+                "david_h_moore": "DAVID H. MOORE",
+                "raynetta_greenleaf": "RAYNETTA GREENLEAF"
+            },
+            "18": {
+                "chuks_onyezia": "CHUKS ONYEZIA",
+                "derrick_g_curtis": "DERRICK G. CURTIS"
+            },
+            "19": {
+                "matthew_j_oshea": "MATTHEW J. O'SHEA",
+                "david_a_dewar": "DAVID A. DEWAR"
+            },
+            "23": {
+                "silvana_tabares": "SILVANA TABARES",
+                "paulino_villarreal_jr": "PAULINO VILLARREAL, JR."
+            },
+            "26": {
+                "theresa_siaw": "THERESA SIAW",
+                "roberto_maldonado": "ROBERTO MALDONADO",
+                "david_herrera": "DAVID HERRERA"
+            },
+            "28": {
+                "miguel_bautista": "MIGUEL BAUTISTA",
+                "jason_c_ervin": "JASON C. ERVIN",
+                "jasmine_jackson": "JASMINE JACKSON",
+                "beverly_miles": "BEVERLY MILES"
+            },
+            "1": {
+                "proco_joe_moreno": "PROCO 'JOE' MORENO",
+                "daniel_la_spata": "DANIEL LA SPATA"
+            },
+            "2": {
+                "brian_hopkins": "BRIAN HOPKINS"
+            },
+            "9": {
+                "anthony_a_beale": "ANTHONY A. BEALE",
+                "cleopatra_watson": "CLEOPATRA WATSON",
+                "paul_collins": "PAUL COLLINS",
+                "essie_hall": "ESSIE HALL"
+            },
+            "20": {
+                "jeanette_b_taylor": "JEANETTE B TAYLOR",
+                "nicole_j_johnson": "NICOLE J. JOHNSON",
+                "maya_hodari": "MAYA HODARI",
+                "jennifer_o_maddox": "JENNIFER O. MADDOX",
+                "andre_smith": "ANDRE SMITH",
+                "dernard_d_newell": "DERNARD D. NEWELL",
+                "quandra_v_speights": "QUANDRA V. SPEIGHTS",
+                "kevin_m_bailey": "KEVIN M. BAILEY",
+                "anthony_driver_jr": "ANTHONY DRIVER, JR."
+            },
+            "21": {
+                "howard_b_brookins_jr": "HOWARD B. BROOKINS, JR.",
+                "marvin_mcneil": "MARVIN MCNEIL",
+                "patricia_a_foster": "PATRICIA A. FOSTER",
+                "joseph_c_ziegler_jr": "JOSEPH C. ZIEGLER, JR."
+            },
+            "22": {
+                "michael_d_rodriguez": "MICHAEL D. RODRIGUEZ",
+                "lisette_liz_lopez": "LISETTE 'LIZ' LOPEZ",
+                "richard_juarez": "RICHARD JUAREZ",
+                "neftalie_gonzalez": "NEFTALIE GONZALEZ"
+            },
+            "24": {
+                "creative_scott": "CREATIVE SCOTT",
+                "michael__scott_jr": "MICHAEL  SCOTT, JR.",
+                "toriano_a_sanzone": "TORIANO A. SANZONE",
+                "traci_johnson": "TRACI JOHNSON"
+            },
+            "25": {
+                "hilario_dominguez": "HILARIO DOMINGUEZ",
+                "alexander_acevedo": "ALEXANDER ACEVEDO",
+                "troy_antonio_hernandez": "TROY ANTONIO HERNANDEZ",
+                "byron_sigcholopez": "BYRON SIGCHO-LOPEZ",
+                "aida_flores": "AIDA FLORES"
+            },
+            "27": {
+                "walter_burnett_jr": "WALTER BURNETT, JR.",
+                "cynthia_d_bednarz": "CYNTHIA D. BEDNARZ"
+            },
+            "31": {
+                "colin_birdmartinez": "COLIN BIRD-MARTINEZ",
+                "milagros_santiago": "MILAGROS SANTIAGO",
+                "felix_cardona_jr": "FELIX CARDONA JR."
+            },
+            "32": {
+                "scott_waguespack": "SCOTT WAGUESPACK"
+            },
+            "33": {
+                "katie_sieracki": "KATIE SIERACKI",
+                "r_rodriguez_sanchez": "R. RODRIGUEZ SANCHEZ",
+                "deborah_l_mell": "DEBORAH L. MELL"
+            },
+            "34": {
+                "carrie_m_austin": "CARRIE M. AUSTIN",
+                "preston_brown_jr": "PRESTON BROWN JR"
+            },
+            "35": {
+                "amanda_yu_dieterich": "AMANDA YU DIETERICH",
+                "carlos__ramirezrosa": "CARLOS  RAMIREZ-ROSA"
+            },
+            "36": {
+                "gilbert_villegas": "GILBERT VILLEGAS"
+            },
+            "29": {
+                "dwayne_truss": "DWAYNE TRUSS",
+                "chris_taliaferro": "CHRIS TALIAFERRO",
+                "zerlina_a_smith": "ZERLINA A. SMITH"
+            },
+            "30": {
+                "jessica_w_gutierrez": "JESSICA W. GUTIERREZ",
+                "ariel_e_reboyras": "ARIEL E. REBOYRAS",
+                "edgar_edek_esparza": "EDGAR 'EDEK' ESPARZA"
+            },
+            "37": {
+                "emma_m_mitts": "EMMA M. MITTS",
+                "tara_stamps": "TARA STAMPS",
+                "deondre_rutues": "DEONDRE RUTUES"
+            },
+            "38": {
+                "nicholas_sposato": "NICHOLAS SPOSATO"
+            },
+            "41": {
+                "tim_heneghan": "TIM HENEGHAN",
+                "anthony_v_napolitano": "ANTHONY V. NAPOLITANO"
+            },
+            "43": {
+                "derek_lindblom": "DEREK LINDBLOM",
+                "michele_smith": "MICHELE SMITH",
+                "leslie_fox": "LESLIE FOX",
+                "jacob_ringer": "JACOB RINGER",
+                "steven_mcclellan": "STEVEN MCCLELLAN",
+                "rebecca_janowitz": "REBECCA JANOWITZ"
+            },
+            "45": {
+                "marilyn_morales": "MARILYN MORALES",
+                "john_s_arena": "JOHN S. ARENA",
+                "james_jim_gardiner": "JAMES 'JIM' GARDINER",
+                "robert_a_bank": "ROBERT A. BANK"
+            },
+            "47": {
+                "eileen_dordek": "EILEEN DORDEK",
+                "angela_angie_maloney": "ANGELA 'ANGIE' MALONEY",
+                "heather_way_kitzes": "HEATHER WAY KITZES",
+                "michael_a_negron": "MICHAEL A. NEGRON",
+                "matt_martin": "MATT MARTIN",
+                "gus_katsafaros": "GUS KATSAFAROS",
+                "thomas_m_schwartzers": "THOMAS M. SCHWARTZERS",
+                "kimball_ladien": "KIMBALL LADIEN",
+                "jeff_jenkins": "JEFF JENKINS"
+            },
+            "48": {
+                "harry_osterman": "HARRY OSTERMAN",
+                "david_earl_williams_iii": "DAVID EARL WILLIAMS III"
+            },
+            "49": {
+                "joe_moore": "JOE MOORE",
+                "maria_hadden": "MARIA HADDEN"
+            }
+        };
+        const COLORS = [
+            "#e31a1c",
+            "#004E87",
+            "#ff7f00",
+            "#33a02c",
+            "#8052b2",
+            "#f781bf",
+            "#a65628",
+            "#999999",
+            "#8dd3c7",
+        ];
+        let candidates = [];
+        const MOBILE_BREAKPOINT = 600;
+        const map = new mapboxgl.Map({
+            container: 'map',
+            hash: true,
+            center: [-87.8255, 41.8384],
+            zoom: 9,
+            style: 'style-council.json',
+        });
+        map.dragRotate.disable();
+        map.touchZoomRotate.disableRotation();
+
+        map.on('load', function () {
+            map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
+
+            const hoverPopup = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false
+            });
+
+            const clickPopup = new mapboxgl.Popup({
+                closeButton: true,
+                closeOnClick: true,
+            });
+
+            function removePopup(popup) {
+                map.getCanvas().style.cursor = '';
+                popup.remove();
+            }
+
+            function popupContent(feat) {
+                let content = `<div class='popup-prop area'>
+                    <div class='popup-prop-name'>Ward</div>
+                    <div class='popup-prop-value'>${feat.properties.ward}</div>
+                </div>`;
+                if ('precinct' in feat.properties) {
+                    content += `<div class='popup-prop area'>
+                        <div class='popup-prop-name'>Precinct</div>
+                        <div class='popup-prop-value'>${feat.properties.precinct}</div>
+                    </div>`
+                }
+                return content + candidates.sort((a, b) => feat.properties[b.key] - feat.properties[a.key]).map(c =>
+                    `<div class='popup-prop'>
+                        <div class='popup-prop-name'>
+                            <span class="color" style="background-color: ${c.color}"></span>
+                            ${c.label}
+                        </div>
+                        <div class='popup-prop-value'>
+                            <div>${feat.properties[c.key].toLocaleString()}</div>
+                            <div>${((feat.properties[c.key] / feat.properties.ballots_cast) * 100 || 0).toFixed(2)}%</div>
+                        </div>
+                    </div>`
+                ).join("");
+            }
+
+            function onMouseMove(e) {
+                const features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
+                if (features.length > 0 && !clickPopup.isOpen()) {
+                    map.getCanvas().style.cursor = "pointer";
+                    if (window.innerWidth >= MOBILE_BREAKPOINT) {
+                        hoverPopup.setLngLat(e.lngLat)
+                            .setHTML(popupContent(features[0]))
+                            .addTo(map);
+                    }
+                } else {
+                    removePopup(hoverPopup);
+                }
+            }
+
+            function onMouseOut(e) {
+                removePopup(hoverPopup);
+            }
+
+            function onMapClick(e) {
+                const features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
+                if (features.length > 0) {
+                    map.getCanvas().style.cursor = "pointer";
+                    clickPopup.setLngLat(e.lngLat)
+                        .setHTML(popupContent(features[0], e))
+                        .addTo(map);
+                }
+            }
+
+            updateWardData();
+            updateMapLayer();
+            map.on("mousemove", "wards", onMouseMove);
+            map.on("mouseout", "wards", onMouseOut);
+            map.on("click", "wards", onMapClick);
+            map.on("mousemove", "precincts", onMouseMove);
+            map.on("mouseout", "precincts", onMouseOut);
+            map.on("click", "precincts", onMapClick);
+            
+            document.querySelectorAll("input[type='radio']").forEach((el) => {
+                el.addEventListener("change", () => {
+                    updateMapLayer();
+                    updateCheckedLayers();
+                });
+            });
+
+            document.querySelector("#ward").addEventListener("change", updateWardData);
+        });
+
+        function getMapLayer() {
+            return document.querySelector("input[type='radio']:checked").value;
+        }
+
+        function getActiveWard() {
+            return document.querySelector("#ward").value;
+        }
+
+        function getWardCandidates() {
+            const ward = getActiveWard();
+            const wardObj = WARD_CANDIDATE_MAP[ward];
+            candidates = Object.keys(wardObj).map((key, idx) => ({
+                key,
+                label: wardObj[key],
+                color: idx >= (COLORS.length - 1) ? "#000" : COLORS[idx],
+            }));
+        }
+
+        function updateWardData() {
+            const ward = getActiveWard();
+            const wardObj = WARD_CANDIDATE_MAP[ward];
+            candidates = Object.keys(wardObj).map((key, idx) => ({
+                key,
+                label: wardObj[key],
+                color: idx >= (COLORS.length - 1) ? "#000" : COLORS[idx],
+            }));
+            document.querySelector("#candidates").innerHTML = candidates.map(candidate =>
+                `<p>
+                    <span class="color" style="background-color: ${candidate.color}"></span>
+                    <label>
+                        <input type="checkbox" name="candidate" checked data-prop="${candidate.key}" />
+                        ${candidate.label}
+                    </label>
+                </p>`
+            ).join("");
+            updateCandidateMapData(candidates);
+            document.querySelectorAll("input[type='checkbox']").forEach((el) => {
+                el.addEventListener("change", updateCheckedLayers);
+            });
+        }
+
+        function updateCandidateMapData(candidates) {
+            updateMapLayer();
+            const winnerVar = ["max"].concat(candidates.map(c => ["get", c.key]));
+            let caseExpr = ["case"];
+            candidates.forEach((candidate) => {
+                caseExpr.push(["==", ["var", "winner"], ["get", candidate.key]]);
+                caseExpr.push(candidate.color);
+            });
+            caseExpr.push("#ccc");
+            map.setPaintProperty("wards", "fill-opacity", ["case", ["==", ["get", "ballots_cast"], 0], 0, 0.7]);
+            map.setPaintProperty("precincts", "fill-opacity", ["case", ["==", ["get", "ballots_cast"], 0], 0, 0.7]);
+            map.setPaintProperty("wards", "fill-color", ["let", "winner", winnerVar, caseExpr]);
+            map.setPaintProperty("precincts", "fill-color", ["let", "winner", winnerVar, caseExpr]);
+            map.setPaintProperty("wards", "fill-opacity", popOpacityScale("wards"));
+            map.setPaintProperty("precincts", "fill-opacity", popOpacityScale("precincts"));
+        }
+
+        function updateMapLayer() {
+            const layer = getMapLayer();
+            const hideLayer = layer === "precincts" ? "wards" : "precincts";
+            map.setFilter(layer, ["has", candidates[0].key]);
+            map.setFilter(hideLayer, ["has", "FAKEPROP"]);
+        }
+
+        function popOpacityScale(layer) {
+            const maxScale = layer === "wards" ? 20000 : 500;
+            const scaleOpacity = document.querySelector("input[name='opacity']").checked;
+            return scaleOpacity ?
+                ["interpolate", ["linear"], ["get", "ballots_cast"], 0, 0.0, maxScale, 1.0] :
+                ["case", ["==", ["get", "ballots_cast"], 0], 0, 0.7];
+        }
+
+        function updateCheckedLayers() {
+            // Resetting entire style, otherwise errors thrown
+            let selected = [];
+            document.querySelectorAll("input[type='checkbox'][name='candidate']").forEach((el) => {
+                if (el.checked) {
+                    selected.push(el.dataset.prop);
+                }
+            });
+            updateCandidateMapData(candidates.filter(c => selected.includes(c.key)));
+        }
+    </script>
+</body>
+
+</html>
