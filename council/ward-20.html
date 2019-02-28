@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chicago 2019 Election Results</title>
+    <title>Chicago 2019 Election Results: Ward 20</title>
     <link rel="stylesheet" type="text/css" href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css" />
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js"></script>
     <style>
@@ -128,154 +128,86 @@
         <p>
             <span class="color" style="background-color: #e31a1c"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="lightfoot" />
-                Lightfoot
+                <input type="checkbox" name="candidate" checked data-prop="taylor" />
+                Taylor
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #004E87"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="preckwinkle" />
-                Preckwinkle
+                <input type="checkbox" name="candidate" checked data-prop="johnson" />
+                Johnson
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #ff7f00"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="daley" />
-                Daley
+                <input type="checkbox" name="candidate" checked data-prop="hodari" />
+                Hodari
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #33a02c"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="wilson" />
-                Wilson
+                <input type="checkbox" name="candidate" checked data-prop="maddox" />
+                Maddox
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #8052b2"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="mendoza" />
-                Mendoza
+                <input type="checkbox" name="candidate" checked data-prop="smith" />
+                Smith
             </label>
         </p>
         <p>
-            <span class="color" style="background-color: #F5F50A"></span>
+            <span class="color" style="background-color: #f781bf"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="joyce" />
-                Joyce
+                <input type="checkbox" name="candidate" checked data-prop="newell" />
+                Newell
             </label>
         </p>
         <p>
-            <span class="color" style="background-color: #a6cee3"></span>
+            <span class="color" style="background-color: #a65628"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="chico" />
-                Chico
+                <input type="checkbox" name="candidate" checked data-prop="speights" />
+                Speights
             </label>
         </p>
         <p>
-            <span class="color" style="background-color: #ccc"></span>
+            <span class="color" style="background-color: #999999"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="other" />
-                Other
+                <input type="checkbox" name="candidate" checked data-prop="bailey" />
+                Bailey
+            </label>
+        </p>
+        <p>
+            <span class="color" style="background-color: #8dd3c7"></span>
+            <label>
+                <input type="checkbox" name="candidate" checked data-prop="jr." />
+                Driver Jr.
             </label>
         </p>
     </div>
     <script>
-        const candidates = [
-            {
-                label: "Lightfoot",
-                key: "lightfoot",
-                color: "#e31a1c",
-                primary: true,
-            },
-            {
-                label: "Preckwinkle",
-                key: "preckwinkle",
-                color: "#004E87",
-                primary: true,
-            },
-            {
-                label: "Daley",
-                key: "daley",
-                color: "#ff7f00",
-                primary: true,
-            },
-            {
-                label: "Wilson",
-                key: "wilson",
-                color: "#33a02c",
-                primary: true,
-            },
-            {
-                label: "Mendoza",
-                key: "mendoza",
-                color: "#8052b2",
-                primary: true,
-            },
-            {
-                label: "Joyce",
-                key: "joyce",
-                color: "#F5F50A",
-                primary: true,
-            },
-            {
-                label: "Chico",
-                key: "chico",
-                color: "#ccc",
-                primary: true,
-            },
-            {
-                label: "Enyia",
-                key: "enyia",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Vallas",
-                key: "vallas",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "McCarthy",
-                key: "mccarthy",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Ford",
-                key: "ford",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Fioretti",
-                key: "fioretti",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Kozlar",
-                key: "kozlar",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Sales-Griffin",
-                key: "salesgriffin",
-                color: "#ccc",
-                primary: false,
-            },
-        ];
+        let candidates = [];
+        document.querySelectorAll("#legend p").forEach((el) => {
+            if (el.querySelectorAll("span.color").length === 0) {
+                return;
+            }
+            candidates.push({
+                color: el.querySelector("span.color").style["background-color"],
+                label: el.innerText.trim(),
+                key: el.querySelector("input").dataset.prop,
+            });
+        });
         const MOBILE_BREAKPOINT = 600;
         const map = new mapboxgl.Map({
             container: 'map',
             hash: true,
             center: [-87.8255, 41.8384],
             zoom: 9,
-            style: 'style.json',
+            style: 'style-ward-20.json',
         });
         map.dragRotate.disable();
         map.touchZoomRotate.disableRotation();
@@ -380,17 +312,11 @@
         function updateCheckedLayers() {
             // Resetting entire style, otherwise errors thrown
             let selected = [];
-            let other = true;
             document.querySelectorAll("input[type='checkbox'][name='candidate']").forEach((el) => {
-                if (el.checked && el.dataset.prop !== "other") {
+                if (el.checked) {
                     selected.push(el.dataset.prop);
-                } else if (el.dataset.prop === "other") {
-                    other = el.checked;
                 }
             });
-            if (other) {
-                selected = selected.concat(candidates.filter(c => !c.primary).map(c => c.key));
-            }
             const style = map.getStyle();
             style.layers.forEach((layer) => {
                 if (["wards", "precincts"].includes(layer.id)) {
@@ -402,7 +328,7 @@
                     layer.paint['fill-opacity'] = popOpacityScale(layer.id);
                 }
             });
-            map.setStyle({...style});
+            map.setStyle({ ...style });
         }
 
         document.querySelectorAll("input[type='radio']").forEach((el) => {

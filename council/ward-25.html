@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chicago 2019 Election Results</title>
+    <title>Chicago 2019 Election Results: Ward 25</title>
     <link rel="stylesheet" type="text/css" href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css" />
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js"></script>
     <style>
@@ -128,146 +128,66 @@
         <p>
             <span class="color" style="background-color: #e31a1c"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="lightfoot" />
-                Lightfoot
+                <input type="checkbox" name="candidate" checked data-prop="dominguez" />
+                Dominguez
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #004E87"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="preckwinkle" />
-                Preckwinkle
+                <input type="checkbox" name="candidate" checked data-prop="acevedo" />
+                Acevedo
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #ff7f00"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="daley" />
-                Daley
+                <input type="checkbox" name="candidate" checked data-prop="hernandez" />
+                Hernandez
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #33a02c"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="wilson" />
-                Wilson
+                <input type="checkbox" name="candidate" checked data-prop="sigcho-lopez" />
+                Sigcho-Lopez
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #8052b2"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="mendoza" />
-                Mendoza
-            </label>
-        </p>
-        <p>
-            <span class="color" style="background-color: #F5F50A"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="joyce" />
-                Joyce
-            </label>
-        </p>
-        <p>
-            <span class="color" style="background-color: #a6cee3"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="chico" />
-                Chico
-            </label>
-        </p>
-        <p>
-            <span class="color" style="background-color: #ccc"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="other" />
-                Other
+                <input type="checkbox" name="candidate" checked data-prop="flores" />
+                Flores
             </label>
         </p>
     </div>
     <script>
         const candidates = [
             {
-                label: "Lightfoot",
-                key: "lightfoot",
+                label: 'Dominguez',
+                key: 'dominguez',
                 color: "#e31a1c",
-                primary: true,
             },
             {
-                label: "Preckwinkle",
-                key: "preckwinkle",
+                label: 'Acevedo',
+                key: 'acevedo',
                 color: "#004E87",
-                primary: true,
             },
             {
-                label: "Daley",
-                key: "daley",
+                label: 'Hernandez',
+                key: 'hernandez',
                 color: "#ff7f00",
-                primary: true,
             },
             {
-                label: "Wilson",
-                key: "wilson",
+                label: 'Sigcho-Lopez',
+                key: 'sigcho-lopez',
                 color: "#33a02c",
-                primary: true,
             },
             {
-                label: "Mendoza",
-                key: "mendoza",
+                label: 'Flores',
+                key: 'flores',
                 color: "#8052b2",
-                primary: true,
-            },
-            {
-                label: "Joyce",
-                key: "joyce",
-                color: "#F5F50A",
-                primary: true,
-            },
-            {
-                label: "Chico",
-                key: "chico",
-                color: "#ccc",
-                primary: true,
-            },
-            {
-                label: "Enyia",
-                key: "enyia",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Vallas",
-                key: "vallas",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "McCarthy",
-                key: "mccarthy",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Ford",
-                key: "ford",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Fioretti",
-                key: "fioretti",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Kozlar",
-                key: "kozlar",
-                color: "#ccc",
-                primary: false,
-            },
-            {
-                label: "Sales-Griffin",
-                key: "salesgriffin",
-                color: "#ccc",
-                primary: false,
-            },
+            }
         ];
         const MOBILE_BREAKPOINT = 600;
         const map = new mapboxgl.Map({
@@ -275,7 +195,7 @@
             hash: true,
             center: [-87.8255, 41.8384],
             zoom: 9,
-            style: 'style.json',
+            style: 'style-ward-25.json',
         });
         map.dragRotate.disable();
         map.touchZoomRotate.disableRotation();
@@ -380,17 +300,11 @@
         function updateCheckedLayers() {
             // Resetting entire style, otherwise errors thrown
             let selected = [];
-            let other = true;
             document.querySelectorAll("input[type='checkbox'][name='candidate']").forEach((el) => {
-                if (el.checked && el.dataset.prop !== "other") {
+                if (el.checked) {
                     selected.push(el.dataset.prop);
-                } else if (el.dataset.prop === "other") {
-                    other = el.checked;
                 }
             });
-            if (other) {
-                selected = selected.concat(candidates.filter(c => !c.primary).map(c => c.key));
-            }
             const style = map.getStyle();
             style.layers.forEach((layer) => {
                 if (["wards", "precincts"].includes(layer.id)) {
@@ -402,7 +316,7 @@
                     layer.paint['fill-opacity'] = popOpacityScale(layer.id);
                 }
             });
-            map.setStyle({...style});
+            map.setStyle({ ...style });
         }
 
         document.querySelectorAll("input[type='radio']").forEach((el) => {
