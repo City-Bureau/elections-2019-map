@@ -1479,6 +1479,7 @@
             ["==", ["var", "winner"], ["get", "daley"]], "#ff7f00",
             ["==", ["var", "winner"], ["get", "wilson"]], "#33a02c",
             ["==", ["var", "winner"], ["get", "mendoza"]], "#8052b2",
+            ["==", ["var", "winner"], ["get", "enyia"]], "#f781bf",
             ["==", ["var", "winner"], ["get", "joyce"]], "#F5F50A",
             ["==", ["var", "winner"], ["get", "chico"]], "#a6cee3",
             "#ccc"
@@ -1523,6 +1524,7 @@
             ["==", ["var", "winner"], ["get", "daley"]], "#ff7f00",
             ["==", ["var", "winner"], ["get", "wilson"]], "#33a02c",
             ["==", ["var", "winner"], ["get", "mendoza"]], "#8052b2",
+            ["==", ["var", "winner"], ["get", "enyia"]], "#f781bf",
             ["==", ["var", "winner"], ["get", "joyce"]], "#F5F50A",
             ["==", ["var", "winner"], ["get", "chico"]], "#a6cee3",
             "#ccc"
