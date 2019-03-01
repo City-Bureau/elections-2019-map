@@ -501,6 +501,8 @@
                         <div class='popup-prop-value'>${feat.properties.precinct}</div>
                     </div>`
                 }
+                const voteDenominator = candidates.map(c => feat.properties[c.key])
+                    .reduce((prev, cur) => prev + cur, 0);
                 return content + candidates.sort((a, b) => feat.properties[b.key] - feat.properties[a.key]).map(c =>
                     `<div class='popup-prop'>
                         <div class='popup-prop-name'>
@@ -509,7 +511,7 @@
                         </div>
                         <div class='popup-prop-value'>
                             <div>${feat.properties[c.key].toLocaleString()}</div>
-                            <div>${((feat.properties[c.key] / feat.properties.ballots_cast) * 100 || 0).toFixed(2)}%</div>
+                            <div>${((feat.properties[c.key] / voteDenominator) * 100 || 0).toFixed(1)}%</div>
                         </div>
                     </div>`
                 ).join("");
