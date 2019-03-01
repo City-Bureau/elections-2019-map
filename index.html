@@ -35,6 +35,11 @@
             font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
         }
 
+        hr {
+            border-width: 0.5px;
+            border-color: #ccc;
+        }
+
         #map {
             position: absolute;
             top: 0;
@@ -63,6 +68,11 @@
 
         .popup-prop.area {
             justify-content: center;
+            line-height: 1;
+        }
+
+        .popup-prop.area.turnout {
+            margin-bottom: 0;
         }
 
         .popup-prop.area .popup-prop-value {
@@ -123,9 +133,26 @@
             right: 16px;
             background-color: rgba(255, 255, 255, 0.8);
         }
+
+        @media screen and (max-width: 600px) {
+            #legend {
+                left: 8px;
+                right: 8px;
+                bottom: 8px;
+                height: 250px;
+                overflow-y: scroll;
+                -webkit-overflow-scrolling: touch;
+                -moz-box-shadow: inset 0 -10px 10px -10px rgba(0,0,0,0.6);
+                -webkit-box-shadow: inset 0 -10px 10px -10px rgba(0,0,0,0.6);
+                box-shadow: inset 0 -10px 10px -10px rgba(0,0,0,0.6);
+            }                
+
+            #legend p:last-child {
+                margin-bottom: 8px;
+            }
+        }
     </style>
 </head>
-
 <body>
     <div id="map"></div>
     <div id="legend">
@@ -149,56 +176,56 @@
         <p>
             <span class="color" style="background-color: #e31a1c"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="lightfoot" />
+                <input type="checkbox" name="candidate" checked data-prop="lori_lightfoot" />
                 Lightfoot
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #004E87"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="preckwinkle" />
+                <input type="checkbox" name="candidate" checked data-prop="toni_preckwinkle" />
                 Preckwinkle
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #ff7f00"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="daley" />
+                <input type="checkbox" name="candidate" checked data-prop="william_m_daley" />
                 Daley
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #33a02c"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="wilson" />
+                <input type="checkbox" name="candidate" checked data-prop="willie_l_wilson" />
                 Wilson
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #8052b2"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="mendoza" />
+                <input type="checkbox" name="candidate" checked data-prop="susana_a_mendoza" />
                 Mendoza
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #f781bf"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="enyia" />
+                <input type="checkbox" name="candidate" checked data-prop="amara_enyia" />
                 Enyia
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #F5F50A"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="joyce" />
+                <input type="checkbox" name="candidate" checked data-prop="jerry_joyce" />
                 Joyce
             </label>
         </p>
         <p>
             <span class="color" style="background-color: #a6cee3"></span>
             <label>
-                <input type="checkbox" name="candidate" checked data-prop="chico" />
+                <input type="checkbox" name="candidate" checked data-prop="gery_chico" />
                 Chico
             </label>
         </p>
@@ -213,94 +240,94 @@
     <script src="https://pym.nprapps.org/pym.v1.min.js"></script>
     <script>
         var pymChild = new pym.Child();
-        const candidates = [
+        var candidates = [
             {
                 label: "Lightfoot",
-                key: "lightfoot",
+                key: "lori_lightfoot",
                 color: "#e31a1c",
                 primary: true,
             },
             {
                 label: "Preckwinkle",
-                key: "preckwinkle",
+                key: "toni_preckwinkle",
                 color: "#004E87",
                 primary: true,
             },
             {
                 label: "Daley",
-                key: "daley",
+                key: "william_m_daley",
                 color: "#ff7f00",
                 primary: true,
             },
             {
                 label: "Wilson",
-                key: "wilson",
+                key: "willie_l_wilson",
                 color: "#33a02c",
                 primary: true,
             },
             {
                 label: "Mendoza",
-                key: "mendoza",
+                key: "susana_a_mendoza",
                 color: "#8052b2",
                 primary: true,
             },
             {
                 label: "Joyce",
-                key: "joyce",
+                key: "jerry_joyce",
                 color: "#F5F50A",
                 primary: true,
             },
             {
                 label: "Chico",
-                key: "chico",
+                key: "gery_chico",
                 color: "#a6cee3",
                 primary: true,
             },
             {
                 label: "Enyia",
-                key: "enyia",
+                key: "amara_enyia",
                 color: "#f781bf",
                 primary: true,
             },
             {
                 label: "Vallas",
-                key: "vallas",
+                key: "paul_vallas",
                 color: "#ccc",
                 primary: false,
             },
             {
                 label: "McCarthy",
-                key: "mccarthy",
+                key: "garry_mccarthy",
                 color: "#ccc",
                 primary: false,
             },
             {
                 label: "Ford",
-                key: "ford",
+                key: "la_shawn_k_ford",
                 color: "#ccc",
                 primary: false,
             },
             {
                 label: "Fioretti",
-                key: "fioretti",
+                key: "robert_bob_fioretti",
                 color: "#ccc",
                 primary: false,
             },
             {
                 label: "Kozlar",
-                key: "kozlar",
+                key: "john_kenneth_kozlar",
                 color: "#ccc",
                 primary: false,
             },
             {
                 label: "Sales-Griffin",
-                key: "salesgriffin",
+                key: "neal_salesgriffin",
                 color: "#ccc",
                 primary: false,
             },
         ];
-        const MOBILE_BREAKPOINT = 600;
-        const map = new mapboxgl.Map({
+        var MOBILE_BREAKPOINT = 600;
+        var map = new mapboxgl.Map({
             container: 'map',
             hash: true,
             center: [-87.8255, 41.8384],
@@ -313,12 +340,12 @@
         map.on('load', function () {
             map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
 
-            const hoverPopup = new mapboxgl.Popup({
+            var hoverPopup = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false
             });
 
-            const clickPopup = new mapboxgl.Popup({
+            var clickPopup = new mapboxgl.Popup({
                 closeButton: true,
                 closeOnClick: true,
             });
@@ -329,32 +356,38 @@
             }
 
             function popupContent(feat) {
-                let content = `<div class='popup-prop area'>
-                    <div class='popup-prop-name'>Ward</div>
-                    <div class='popup-prop-value'>${feat.properties.ward}</div>
-                </div>`;
-                if ('precinct' in feat.properties) {
-                    content += `<div class='popup-prop area'>
-                        <div class='popup-prop-name'>Precinct</div>
-                        <div class='popup-prop-value'>${feat.properties.precinct}</div>
-                    </div>`
+                var labelContent = "Ward " + feat.properties.ward;
+                if (feat.properties.hasOwnProperty('precinct')) {
+                    labelContent += ", Precinct " + feat.properties.precinct;
                 }
-                return content + candidates.sort((a, b) => feat.properties[b.key] - feat.properties[a.key]).map(c =>
-                    `<div class='popup-prop'>
-                        <div class='popup-prop-name'>
-                            <span class="color" style="background-color: ${c.color}"></span>
-                            ${c.label}
-                        </div>
-                        <div class='popup-prop-value'>
-                            <div>${feat.properties[c.key].toLocaleString()}</div>
-                            <div>${feat.properties[c.key + '_pct']}%</div>
-                        </div>
-                    </div>`
-                ).join("");
+                content = "<div class='popup-prop area'>" +
+                    "<div class='popup-prop-name'>" + labelContent + "</div>" +
+                "</div>" +
+                "<div class='popup-prop area turnout'>" +
+                    "<div class='popup-prop-name'>Turnout</div>" +
+                    "<div class='popup-prop-value'>" +
+                        ((feat.properties.ballots_cast / feat.properties.registered_voters) * 100).toFixed(1) + "%" +
+                    "</div>" +
+                "</div><hr>";
+                var voteDenominator = candidates.map(function (c) { return feat.properties[c.key]; })
+                    .reduce(function (prev, cur) { return prev + cur; }, 0);
+                return content + candidates.sort(function (a, b) { return feat.properties[b.key] - feat.properties[a.key]; })
+                    .map(function (c) {
+                        return "<div class='popup-prop'>" +
+                            "<div class='popup-prop-name'>" +
+                                "<span class='color' style='background-color: " + c.color + "'></span>\n" +
+                                c.label +
+                            "</div>" +
+                            "<div class='popup-prop-value'>" +
+                                "<div>" + feat.properties[c.key].toLocaleString() + "</div>" +
+                                "<div>" + ((feat.properties[c.key] / voteDenominator) * 100 || 0).toFixed(1) + "%</div>" +
+                            "</div>" +
+                        "</div>";
+                    }).join("");
             }
 
             function onMouseMove(e) {
-                const features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
+                var features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
                 if (features.length > 0 && !clickPopup.isOpen()) {
                     map.getCanvas().style.cursor = "pointer";
                     if (window.innerWidth >= MOBILE_BREAKPOINT) {
@@ -372,7 +405,7 @@
             }
 
             function onMapClick(e) {
-                const features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
+                var features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
                 if (features.length > 0) {
                     map.getCanvas().style.cursor = "pointer";
                     clickPopup.setLngLat(e.lngLat)
@@ -394,26 +427,26 @@
         }
 
         function updateMapLayer() {
-            const layer = getMapLayer();
-            const hideLayer = layer === "precincts" ? "wards" : "precincts";
+            var layer = getMapLayer();
+            var hideLayer = layer === "precincts" ? "wards" : "precincts";
             map.setFilter(layer, null);
             map.setFilter(hideLayer, ["has", "FAKEPROP"]);
         }
 
         function popOpacityScale(layer) {
-            const maxScale = layer === "wards" ? 20000 : 500;
-            const scaleOpacity = document.querySelector("input[name='opacity']").checked;
-            const fillOpacity = scaleOpacity ?
-                ["interpolate", ["linear"], ["get", "total_votes"], 0, 0.0, maxScale, 1.0]
-                : ["case", ["==", ["get", "total_votes"], 0], 0, 0.7];
+            var maxScale = layer === "wards" ? 20000 : 500;
+            var scaleOpacity = document.querySelector("input[name='opacity']").checked;
+            var fillOpacity = scaleOpacity ?
+                ["interpolate", ["linear"], ["get", "ballots_cast"], 0, 0.0, maxScale, 1.0]
+                : ["case", ["==", ["get", "ballots_cast"], 0], 0, 0.7];
             return fillOpacity;
         }
 
         function updateCheckedLayers() {
             // Resetting entire style, otherwise errors thrown
-            let selected = [];
-            let other = true;
-            document.querySelectorAll("input[type='checkbox'][name='candidate']").forEach((el) => {
+            var selected = [];
+            var other = true;
+            document.querySelectorAll("input[type='checkbox'][name='candidate']").forEach(function (el) {
                 if (el.checked && el.dataset.prop !== "other") {
                     selected.push(el.dataset.prop);
                 } else if (el.dataset.prop === "other") {
@@ -421,14 +454,16 @@
                 }
             });
             if (other) {
-                selected = selected.concat(candidates.filter(c => !c.primary).map(c => c.key));
+                selected = selected.concat(candidates
+                    .filter(function(c) { return !c.primary; })
+                    .map(function (c) { return c.key; }));
             }
-            const style = map.getStyle();
-            style.layers.forEach((layer) => {
+            var style = map.getStyle();
+            style.layers.forEach(function (layer) {
                 if (["wards", "precincts"].includes(layer.id)) {
-                    const expression = layer.paint['fill-color'];
-                    const newExpression = [...expression];
-                    const maxExpression = ["max"].concat(selected.map(s => ["get", s]));
+                    var expression = layer.paint['fill-color'];
+                    var newExpression = [...expression];
+                    var maxExpression = ["max"].concat(selected.map(function (s) { return ["get", s]; }));
                     newExpression[2] = maxExpression;
                     layer.paint['fill-color'] = newExpression;
                     layer.paint['fill-opacity'] = popOpacityScale(layer.id);
@@ -437,14 +472,14 @@
             map.setStyle({...style});
         }
 
-        document.querySelectorAll("input[type='radio']").forEach((el) => {
-            el.addEventListener("change", () => {
+        document.querySelectorAll("input[type='radio']").forEach(function (el) {
+            el.addEventListener("change", function () {
                 updateMapLayer();
                 updateCheckedLayers();
             });
         })
 
-        document.querySelectorAll("input[type='checkbox']").forEach((el) => {
+        document.querySelectorAll("input[type='checkbox']").forEach(function (el) {
             el.addEventListener("change", updateCheckedLayers);
         });
     </script>

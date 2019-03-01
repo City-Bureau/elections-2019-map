@@ -18,14 +18,14 @@
       "type": "vector",
       "maxzoom": 9,
       "tiles": [
-        "https://s3.amazonaws.com/chicago-election-2019/wards/{z}/{x}/{y}.pbf"
+        "https://s3.amazonaws.com/chicago-election-2019/wards-mayor/{z}/{x}/{y}.pbf"
       ]
     },
     "precincts": {
       "type": "vector",
       "maxzoom": 11,
       "tiles": [
-        "https://s3.amazonaws.com/chicago-election-2019/precincts/{z}/{x}/{y}.pbf"
+        "https://s3.amazonaws.com/chicago-election-2019/precincts-mayor/{z}/{x}/{y}.pbf"
       ]
     }
   },
@@ -1457,38 +1457,38 @@
           "winner",
           [
             "max",
-            ["get", "lightfoot"],
-            ["get", "preckwinkle"],
-            ["get", "daley"],
-            ["get", "wilson"],
-            ["get", "mendoza"],
-            ["get", "joyce"],
-            ["get", "chico"],
-            ["get", "enyia"],
-            ["get", "vallas"],
-            ["get", "mccarthy"],
-            ["get", "ford"],
-            ["get", "fioretti"],
-            ["get", "kozlar"],
-            ["get", "salesgriffin"]
+            ["get", "lori_lightfoot"],
+            ["get", "toni_preckwinkle"],
+            ["get", "william_m_daley"],
+            ["get", "willie_l_wilson"],
+            ["get", "susana_a_mendoza"],
+            ["get", "jerry_joyce"],
+            ["get", "gery_chico"],
+            ["get", "amara_enyia"],
+            ["get", "paul_vallas"],
+            ["get", "garry_mccarthy"],
+            ["get", "la_shawn_k_ford"],
+            ["get", "robert_bob_fioretti"],
+            ["get", "john_kenneth_kozlar"],
+            ["get", "neal_salesgriffin"]
           ],
           [
             "case",
-            ["==", ["var", "winner"], ["get", "lightfoot"]], "#e31a1c",
-            ["==", ["var", "winner"], ["get", "preckwinkle"]], "#004E87",
-            ["==", ["var", "winner"], ["get", "daley"]], "#ff7f00",
-            ["==", ["var", "winner"], ["get", "wilson"]], "#33a02c",
-            ["==", ["var", "winner"], ["get", "mendoza"]], "#8052b2",
-            ["==", ["var", "winner"], ["get", "enyia"]], "#f781bf",
-            ["==", ["var", "winner"], ["get", "joyce"]], "#F5F50A",
-            ["==", ["var", "winner"], ["get", "chico"]], "#a6cee3",
+            ["==", ["var", "winner"], ["get", "lori_lightfoot"]], "#e31a1c",
+            ["==", ["var", "winner"], ["get", "toni_preckwinkle"]], "#004E87",
+            ["==", ["var", "winner"], ["get", "william_m_daley"]], "#ff7f00",
+            ["==", ["var", "winner"], ["get", "willie_l_wilson"]], "#33a02c",
+            ["==", ["var", "winner"], ["get", "susana_a_mendoza"]], "#8052b2",
+            ["==", ["var", "winner"], ["get", "amara_enyia"]], "#f781bf",
+            ["==", ["var", "winner"], ["get", "jerry_joyce"]], "#F5F50A",
+            ["==", ["var", "winner"], ["get", "gery_chico"]], "#a6cee3",
             "#ccc"
           ]
         ],
         "fill-opacity": ["case", ["==", ["get", "total_votes"], 0], 0, 0.7]
       },
       "source": "wards",
-      "source-layer": "wards",
+      "source-layer": "wards-mayor",
       "type": "fill"
     },
     {
@@ -1502,38 +1502,38 @@
           "winner",
           [
             "max",
-            ["get", "lightfoot"],
-            ["get", "preckwinkle"],
-            ["get", "daley"],
-            ["get", "wilson"],
-            ["get", "mendoza"],
-            ["get", "joyce"],
-            ["get", "chico"],
-            ["get", "enyia"],
-            ["get", "vallas"],
-            ["get", "mccarthy"],
-            ["get", "ford"],
-            ["get", "fioretti"],
-            ["get", "kozlar"],
-            ["get", "salesgriffin"]
+            ["get", "lori_lightfoot"],
+            ["get", "toni_preckwinkle"],
+            ["get", "william_m_daley"],
+            ["get", "willie_l_wilson"],
+            ["get", "susana_a_mendoza"],
+            ["get", "jerry_joyce"],
+            ["get", "gery_chico"],
+            ["get", "amara_enyia"],
+            ["get", "paul_vallas"],
+            ["get", "garry_mccarthy"],
+            ["get", "la_shawn_k_ford"],
+            ["get", "robert_bob_fioretti"],
+            ["get", "john_kenneth_kozlar"],
+            ["get", "neal_salesgriffin"]
           ],
           [
             "case",
-            ["==", ["var", "winner"], ["get", "lightfoot"]], "#e31a1c",
-            ["==", ["var", "winner"], ["get", "preckwinkle"]], "#004E87",
-            ["==", ["var", "winner"], ["get", "daley"]], "#ff7f00",
-            ["==", ["var", "winner"], ["get", "wilson"]], "#33a02c",
-            ["==", ["var", "winner"], ["get", "mendoza"]], "#8052b2",
-            ["==", ["var", "winner"], ["get", "enyia"]], "#f781bf",
-            ["==", ["var", "winner"], ["get", "joyce"]], "#F5F50A",
-            ["==", ["var", "winner"], ["get", "chico"]], "#a6cee3",
+            ["==", ["var", "winner"], ["get", "lori_lightfoot"]], "#e31a1c",
+            ["==", ["var", "winner"], ["get", "toni_preckwinkle"]], "#004E87",
+            ["==", ["var", "winner"], ["get", "william_m_daley"]], "#ff7f00",
+            ["==", ["var", "winner"], ["get", "willie_l_wilson"]], "#33a02c",
+            ["==", ["var", "winner"], ["get", "susana_a_mendoza"]], "#8052b2",
+            ["==", ["var", "winner"], ["get", "amara_enyia"]], "#f781bf",
+            ["==", ["var", "winner"], ["get", "jerry_joyce"]], "#F5F50A",
+            ["==", ["var", "winner"], ["get", "gery_chico"]], "#a6cee3",
             "#ccc"
           ]
         ],
         "fill-opacity": ["case", ["==", ["get", "total_votes"], 0], 0, 0.7]
       },
       "source": "precincts",
-      "source-layer": "precincts",
+      "source-layer": "precincts-mayor",
       "type": "fill"
     },
     {

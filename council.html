@@ -34,6 +34,11 @@
             font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
         }
 
+        hr {
+            border-width: 0.5px;
+            border-color: #ccc;
+        }
+
         #map {
             position: absolute;
             top: 0;
@@ -62,6 +67,11 @@
 
         .popup-prop.area {
             justify-content: center;
+            line-height: 1;
+        }
+
+        .popup-prop.area.turnout {
+            margin-bottom: 0;
         }
 
         .popup-prop.area .popup-prop-value {
@@ -79,6 +89,17 @@
         .popup-prop-name {
             font-weight: bold;
             margin-right: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .popup-prop-name > .color {
+            margin-right: 4px;
+        }
+
+        .popup-prop-name > span:nth-child(2) {
+            line-height: 1;
         }
 
         .popup-prop-value {
@@ -86,7 +107,8 @@
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
-            min-width: 40%;
+            min-width: 30%;
+            margin-left: 8px;
         }
 
         .popup-prop-value div {
@@ -109,6 +131,7 @@
         }
 
         .color {
+            min-width: 20px;
             width: 20px;
             height: 20px;
             display: inline-block;
@@ -121,6 +144,33 @@
             bottom: 16px;
             right: 16px;
             background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* To prevent zoom on mobile */
+        label[for="ward"],
+        #ward {
+            font-size: 16px;
+        }
+
+        @media screen and (max-width: 600px) {
+            #legend {
+                left: 8px;
+                right: 8px;
+                bottom: 8px;
+                max-height: 200px;
+                overflow-y: scroll;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #legend.has-more {
+                -moz-box-shadow: inset 0 -10px 10px -10px rgba(0,0,0,0.6);
+                -webkit-box-shadow: inset 0 -10px 10px -10px rgba(0,0,0,0.6);
+                box-shadow: inset 0 -10px 10px -10px rgba(0,0,0,0.6);
+            }
+
+            #legend p:last-child {
+                margin-bottom: 8px;
+            }
         }
     </style>
 </head>
@@ -202,12 +252,14 @@
             </label>
         </p>
         <hr />
-        <div id="candidates"></div>
+        <div id="candidates">
+            <p>Loading...</p>
+        </div>
     </div>
     <script src="https://pym.nprapps.org/pym.v1.min.js"></script>
     <script>
         var pymChild = new pym.Child();
-        const WARD_CANDIDATE_MAP = {
+        var WARD_CANDIDATE_MAP = {
             "39": {
                 "robert_murphy": "ROBERT MURPHY",
                 "samantha_sam_nugent": "SAMANTHA 'SAM' NUGENT",
@@ -469,7 +521,7 @@
                 "maria_hadden": "MARIA HADDEN"
             }
         };
-        const COLORS = [
+        var COLORS = [
             "#e31a1c",
             "#004E87",
             "#ff7f00",
@@ -480,9 +532,9 @@
             "#999999",
             "#8dd3c7",
         ];
-        let candidates = [];
-        const MOBILE_BREAKPOINT = 600;
-        const map = new mapboxgl.Map({
+        var candidates = [];
+        var MOBILE_BREAKPOINT = 600;
+        var map = new mapboxgl.Map({
             container: 'map',
             hash: true,
             center: [-87.8255, 41.8384],
@@ -495,12 +547,12 @@
         map.on('load', function () {
             map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
 
-            const hoverPopup = new mapboxgl.Popup({
+            var hoverPopup = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false
             });
 
-            const clickPopup = new mapboxgl.Popup({
+            var clickPopup = new mapboxgl.Popup({
                 closeButton: true,
                 closeOnClick: true,
             });
@@ -511,34 +563,38 @@
             }
 
             function popupContent(feat) {
-                let content = `<div class='popup-prop area'>
-                    <div class='popup-prop-name'>Ward</div>
-                    <div class='popup-prop-value'>${feat.properties.ward}</div>
-                </div>`;
-                if ('precinct' in feat.properties) {
-                    content += `<div class='popup-prop area'>
-                        <div class='popup-prop-name'>Precinct</div>
-                        <div class='popup-prop-value'>${feat.properties.precinct}</div>
-                    </div>`
+                var labelContent = "Ward " + feat.properties.ward;
+                if (feat.properties.hasOwnProperty('precinct')) {
+                    labelContent += ", Precinct " + feat.properties.precinct;
                 }
-                const voteDenominator = candidates.map(c => feat.properties[c.key])
-                    .reduce((prev, cur) => prev + cur, 0);
-                return content + candidates.sort((a, b) => feat.properties[b.key] - feat.properties[a.key]).map(c =>
-                    `<div class='popup-prop'>
-                        <div class='popup-prop-name'>
-                            <span class="color" style="background-color: ${c.color}"></span>
-                            ${c.label}
-                        </div>
-                        <div class='popup-prop-value'>
-                            <div>${feat.properties[c.key].toLocaleString()}</div>
-                            <div>${((feat.properties[c.key] / voteDenominator) * 100 || 0).toFixed(1)}%</div>
-                        </div>
-                    </div>`
-                ).join("");
+                content = "<div class='popup-prop area'>" +
+                    "<div class='popup-prop-name'>" + labelContent + "</div>" +
+                "</div>" +
+                "<div class='popup-prop area turnout'>" +
+                    "<div class='popup-prop-name'>Turnout</div>" +
+                    "<div class='popup-prop-value'>" +
+                        ((feat.properties.ballots_cast / feat.properties.registered_voters) * 100).toFixed(1) + "%" +
+                    "</div>" +
+                "</div><hr>";
+                var voteDenominator = candidates.map(function (c) { return feat.properties[c.key]; })
+                    .reduce(function (prev, cur) { return prev + cur; }, 0);
+                return content + candidates.sort(function (a, b) { return feat.properties[b.key] - feat.properties[a.key]; })
+                    .map(function (c) {
+                        return "<div class='popup-prop'>" +
+                            "<div class='popup-prop-name'>" +
+                                "<span class='color' style='background-color: " + c.color + "'></span>\n" +
+                                "<span>" + c.label + "</span>" +
+                            "</div>" +
+                            "<div class='popup-prop-value'>" +
+                                "<div>" + feat.properties[c.key].toLocaleString() + "</div>" +
+                                "<div>" + ((feat.properties[c.key] / voteDenominator) * 100 || 0).toFixed(1) + "%</div>" +
+                            "</div>" +
+                        "</div>";
+                    }).join("");
             }
 
             function onMouseMove(e) {
-                const features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
+                var features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
                 if (features.length > 0 && !clickPopup.isOpen()) {
                     map.getCanvas().style.cursor = "pointer";
                     if (window.innerWidth >= MOBILE_BREAKPOINT) {
@@ -556,7 +612,7 @@
             }
 
             function onMapClick(e) {
-                const features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
+                var features = map.queryRenderedFeatures(e.point, { layers: ["wards", "precincts"] });
                 if (features.length > 0) {
                     map.getCanvas().style.cursor = "pointer";
                     clickPopup.setLngLat(e.lngLat)
@@ -574,8 +630,8 @@
             map.on("mouseout", "precincts", onMouseOut);
             map.on("click", "precincts", onMapClick);
             
-            document.querySelectorAll("input[type='radio']").forEach((el) => {
-                el.addEventListener("change", () => {
+            document.querySelectorAll("input[type='radio']").forEach(function (el) {
+                el.addEventListener("change", function () {
                     updateMapLayer();
                     updateCheckedLayers();
                 });
@@ -593,43 +649,56 @@
         }
 
         function getWardCandidates() {
-            const ward = getActiveWard();
-            const wardObj = WARD_CANDIDATE_MAP[ward];
-            candidates = Object.keys(wardObj).map((key, idx) => ({
-                key,
-                label: wardObj[key],
-                color: idx >= (COLORS.length - 1) ? "#000" : COLORS[idx],
-            }));
+            var ward = getActiveWard();
+            var wardObj = WARD_CANDIDATE_MAP[ward];
+            candidates = Object.keys(wardObj).map(function (key, idx) {
+                return {
+                    key: key,
+                    label: wardObj[key],
+                    color: idx >= (COLORS.length - 1) ? "#000" : COLORS[idx],
+                };
+            });
         }
 
         function updateWardData() {
-            const ward = getActiveWard();
-            const wardObj = WARD_CANDIDATE_MAP[ward];
-            candidates = Object.keys(wardObj).map((key, idx) => ({
-                key,
-                label: wardObj[key],
-                color: idx >= (COLORS.length - 1) ? "#000" : COLORS[idx],
-            }));
-            document.querySelector("#candidates").innerHTML = candidates.map(candidate =>
-                `<p>
-                    <span class="color" style="background-color: ${candidate.color}"></span>
-                    <label>
-                        <input type="checkbox" name="candidate" checked data-prop="${candidate.key}" />
-                        ${candidate.label}
-                    </label>
-                </p>`
-            ).join("");
+            var ward = getActiveWard();
+            var wardObj = WARD_CANDIDATE_MAP[ward];
+            candidates = Object.keys(wardObj).map(function (key, idx) {
+                return {
+                    key: key,
+                    label: wardObj[key],
+                    color: idx >= (COLORS.length - 1) ? "#000" : COLORS[idx],
+                };
+            });
+
+            document.querySelector("#candidates").innerHTML = candidates.map(function (candidate) {
+                return "<p><span class='color' style='background-color: " + candidate.color + "'></span>" +
+                    "<label>" +
+                        "<input type='checkbox' name='candidate' checked data-prop='" + candidate.key + "' />" +
+                        candidate.label +
+                    "</label>" +
+                "</p>";
+            }).join("");
             updateCandidateMapData(candidates);
-            document.querySelectorAll("input[type='checkbox']").forEach((el) => {
+            // Add has-more class for shadow if more than 2 candidates for a race
+            var legend = document.querySelector("#legend");
+            if (candidates.length > 2) {
+                if (!legend.classList.contains("has-more")) {
+                    legend.classList.add("has-more");
+                }
+            } else if (legend.classList.contains("has-more")) {
+                legend.classList.remove("has-more");
+            }
+            document.querySelectorAll("input[type='checkbox']").forEach(function (el) {
                 el.addEventListener("change", updateCheckedLayers);
             });
         }
 
         function updateCandidateMapData(candidates) {
             updateMapLayer();
-            const winnerVar = ["max"].concat(candidates.map(c => ["get", c.key]));
-            let caseExpr = ["case"];
-            candidates.forEach((candidate) => {
+            var winnerVar = ["max"].concat(candidates.map(function (c) { return ["get", c.key]; }));
+            var caseExpr = ["case"];
+            candidates.forEach(function (candidate) {
                 caseExpr.push(["==", ["var", "winner"], ["get", candidate.key]]);
                 caseExpr.push(candidate.color);
             });
@@ -643,15 +712,15 @@
         }
 
         function updateMapLayer() {
-            const layer = getMapLayer();
-            const hideLayer = layer === "precincts" ? "wards" : "precincts";
+            var layer = getMapLayer();
+            var hideLayer = layer === "precincts" ? "wards" : "precincts";
             map.setFilter(layer, ["has", candidates[0].key]);
             map.setFilter(hideLayer, ["has", "FAKEPROP"]);
         }
 
         function popOpacityScale(layer) {
-            const maxScale = layer === "wards" ? 20000 : 500;
-            const scaleOpacity = document.querySelector("input[name='opacity']").checked;
+            var maxScale = layer === "wards" ? 20000 : 500;
+            var scaleOpacity = document.querySelector("input[name='opacity']").checked;
             return scaleOpacity ?
                 ["interpolate", ["linear"], ["get", "ballots_cast"], 0, 0.0, maxScale, 1.0] :
                 ["case", ["==", ["get", "ballots_cast"], 0], 0, 0.7];
@@ -659,13 +728,13 @@
 
         function updateCheckedLayers() {
             // Resetting entire style, otherwise errors thrown
-            let selected = [];
-            document.querySelectorAll("input[type='checkbox'][name='candidate']").forEach((el) => {
+            var selected = [];
+            document.querySelectorAll("input[type='checkbox'][name='candidate']").forEach(function (el) {
                 if (el.checked) {
                     selected.push(el.dataset.prop);
                 }
             });
-            updateCandidateMapData(candidates.filter(c => selected.includes(c.key)));
+            updateCandidateMapData(candidates.filter(function (c) { return selected.includes(c.key); }));
         }
     </script>
 </body>

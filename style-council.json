@@ -1452,35 +1452,7 @@
       "layout": {},
       "paint": {
         "fill-outline-color": "#000000",
-        "fill-color": [
-          "let",
-          "winner",
-          [
-            "max",
-            ["get", "taylor"],
-            ["get", "johnson"],
-            ["get", "hodari"],
-            ["get", "maddox"],
-            ["get", "smith"],
-            ["get", "newell"],
-            ["get", "speights"],
-            ["get", "bailey"],
-            ["get", "jr."]
-          ],
-          [
-            "case",
-            ["==", ["var", "winner"], ["get", "taylor"]], "#e31a1c",
-            ["==", ["var", "winner"], ["get", "johnson"]], "#004E87",
-            ["==", ["var", "winner"], ["get", "hodari"]], "#ff7f00",
-            ["==", ["var", "winner"], ["get", "maddox"]], "#33a02c",
-            ["==", ["var", "winner"], ["get", "smith"]], "#8052b2",
-            ["==", ["var", "winner"], ["get", "newell"]], "#f781bf",
-            ["==", ["var", "winner"], ["get", "speights"]], "#a65628",
-            ["==", ["var", "winner"], ["get", "bailey"]], "#999999",
-            ["==", ["var", "winner"], ["get", "jr."]], "#8dd3c7",
-            "#ccc"
-          ]
-        ],
+        "fill-color": "#cccccc",
         "fill-opacity": 0
       },
       "source": "wards",
@@ -1493,35 +1465,7 @@
       "filter": ["has", "FAKEPROP"],
       "paint": {
         "fill-outline-color": "#000000",
-        "fill-color": [
-          "let",
-          "winner",
-          [
-            "max",
-            ["get", "taylor"],
-            ["get", "johnson"],
-            ["get", "hodari"],
-            ["get", "maddox"],
-            ["get", "smith"],
-            ["get", "newell"],
-            ["get", "speights"],
-            ["get", "bailey"],
-            ["get", "jr."]
-          ],
-          [
-            "case",
-            ["==", ["var", "winner"], ["get", "taylor"]], "#e31a1c",
-            ["==", ["var", "winner"], ["get", "johnson"]], "#004E87",
-            ["==", ["var", "winner"], ["get", "hodari"]], "#ff7f00",
-            ["==", ["var", "winner"], ["get", "maddox"]], "#33a02c",
-            ["==", ["var", "winner"], ["get", "smith"]], "#8052b2",
-            ["==", ["var", "winner"], ["get", "newell"]], "#f781bf",
-            ["==", ["var", "winner"], ["get", "speights"]], "#a65628",
-            ["==", ["var", "winner"], ["get", "bailey"]], "#999999",
-            ["==", ["var", "winner"], ["get", "jr."]], "#8dd3c7",
-            "#ccc"
-          ]
-        ],
+        "fill-color": "#cccccc",
         "fill-opacity": 0
       },
       "source": "precincts",
