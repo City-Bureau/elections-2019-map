@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chicago 2019 Mayoral Election Results | City Bureau</title>
+    <title>Chicago 2019 Election Turnout | City Bureau</title>
     <link rel="shortcut icon" type="image/x-icon" href="https://static1.squarespace.com/static/56cfdde2c2ea51668ffa109d/t/576ceb5ed482e9ee841d6082/favicon.ico"/>
     <meta name="description" content="View Chicago 2019 election results at the ward and precinct level">
     <meta name="author" content="City Bureau">
@@ -168,73 +168,37 @@
         </p>
         <hr />
         <p>
-            <label>
-                <input type="checkbox" name="opacity" value="opacity"> Opacity by # Votes
-            </label>
-        </p>
-        <hr />
-        <p>
-            <span class="color" style="background-color: #e31a1c"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="lori_lightfoot" />
-                Lightfoot
-            </label>
+            Turnout
         </p>
         <p>
-            <span class="color" style="background-color: #004E87"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="toni_preckwinkle" />
-                Preckwinkle
-            </label>
+            <span class="color" style="background-color: rgba(255, 255, 178, 0.7)"></span>
+            <span>
+                0%
+            </span>
         </p>
         <p>
-            <span class="color" style="background-color: #ff7f00"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="william_m_daley" />
-                Daley
-            </label>
+            <span class="color" style="background-color: rgba(254, 204, 92, 0.7)"></span>
+            <span>
+                15%
+            </span>
         </p>
         <p>
-            <span class="color" style="background-color: #33a02c"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="willie_l_wilson" />
-                Wilson
-            </label>
+            <span class="color" style="background-color: rgba(253, 141, 60, 0.7)"></span>
+            <span>
+                30%
+            </span>
         </p>
         <p>
-            <span class="color" style="background-color: #8052b2"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="susana_a_mendoza" />
-                Mendoza
-            </label>
+            <span class="color" style="background-color: rgba(240, 59, 32, 0.7)"></span>
+            <span>
+                45%
+            </span>
         </p>
         <p>
-            <span class="color" style="background-color: #f781bf"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="amara_enyia" />
-                Enyia
-            </label>
-        </p>
-        <p>
-            <span class="color" style="background-color: #F5F50A"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="jerry_joyce" />
-                Joyce
-            </label>
-        </p>
-        <p>
-            <span class="color" style="background-color: #a6cee3"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="gery_chico" />
-                Chico
-            </label>
-        </p>
-        <p>
-            <span class="color" style="background-color: #ccc"></span>
-            <label>
-                <input type="checkbox" name="candidate" checked data-prop="other" />
-                Other
-            </label>
+            <span class="color" style="background-color: rgba(189, 0, 38, 0.7)"></span>
+            <span>
+                60%+
+            </span>
         </p>
     </div>
     <script src="https://pym.nprapps.org/pym.v1.min.js"></script>
@@ -332,7 +296,7 @@
             hash: true,
             center: [-87.8255, 41.8384],
             zoom: 9,
-            style: 'style.json',
+            style: 'style-turnout.json',
         });
         map.dragRotate.disable();
         map.touchZoomRotate.disableRotation();
@@ -374,10 +338,7 @@
                 return content + candidates.sort(function (a, b) { return feat.properties[b.key] - feat.properties[a.key]; })
                     .map(function (c) {
                         return "<div class='popup-prop'>" +
-                            "<div class='popup-prop-name'>" +
-                                "<span class='color' style='background-color: " + c.color + "'></span>\n" +
-                                c.label +
-                            "</div>" +
+                            "<div class='popup-prop-name'>" + c.label + "</div>" +
                             "<div class='popup-prop-value'>" +
                                 "<div>" + feat.properties[c.key].toLocaleString() + "</div>" +
                                 "<div>" + ((feat.properties[c.key] / voteDenominator) * 100 || 0).toFixed(1) + "%</div>" +
@@ -433,54 +394,8 @@
             map.setFilter(hideLayer, ["has", "FAKEPROP"]);
         }
 
-        function popOpacityScale(layer) {
-            var maxScale = layer === "wards" ? 20000 : 500;
-            var scaleOpacity = document.querySelector("input[name='opacity']").checked;
-            var fillOpacity = scaleOpacity ?
-                ["interpolate", ["linear"], ["get", "ballots_cast"], 0, 0.0, maxScale, 1.0]
-                : ["case", ["==", ["get", "ballots_cast"], 0], 0, 0.7];
-            return fillOpacity;
-        }
-
-        function updateCheckedLayers() {
-            // Resetting entire style, otherwise errors thrown
-            var selected = [];
-            var other = true;
-            document.querySelectorAll("input[type='checkbox'][name='candidate']").forEach(function (el) {
-                if (el.checked && el.dataset.prop !== "other") {
-                    selected.push(el.dataset.prop);
-                } else if (el.dataset.prop === "other") {
-                    other = el.checked;
-                }
-            });
-            if (other) {
-                selected = selected.concat(candidates
-                    .filter(function(c) { return !c.primary; })
-                    .map(function (c) { return c.key; }));
-            }
-            var style = map.getStyle();
-            style.layers.forEach(function (layer) {
-                if (["wards", "precincts"].includes(layer.id)) {
-                    var expression = layer.paint['fill-color'];
-                    var newExpression = [...expression];
-                    var maxExpression = ["max"].concat(selected.map(function (s) { return ["get", s]; }));
-                    newExpression[2] = maxExpression;
-                    layer.paint['fill-color'] = newExpression;
-                    layer.paint['fill-opacity'] = popOpacityScale(layer.id);
-                }
-            });
-            map.setStyle({...style});
-        }
-
         document.querySelectorAll("input[type='radio']").forEach(function (el) {
-            el.addEventListener("change", function () {
-                updateMapLayer();
-                updateCheckedLayers();
-            });
-        });
-
-        document.querySelectorAll("input[type='checkbox']").forEach(function (el) {
-            el.addEventListener("change", updateCheckedLayers);
+            el.addEventListener("change", updateMapLayer);
         });
     </script>
 </body>

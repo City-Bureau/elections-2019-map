@@ -17,6 +17,8 @@ deploy:
 	aws s3 cp style.json s3://$(S3_BUCKET)/style.json --acl=public-read --region=us-east-1
 	aws s3 cp council.html s3://$(S3_BUCKET)/council.html --acl=public-read --region=us-east-1
 	aws s3 cp style-council.json s3://$(S3_BUCKET)/style-council.json --acl=public-read --region=us-east-1
+	aws s3 cp turnout.html s3://$(S3_BUCKET)/turnout.html --acl=public-read --region=us-east-1
+	aws s3 cp style-turnout.json s3://$(S3_BUCKET)/style-turnout.json --acl=public-read --region=us-east-1
 	aws s3 cp ./img/teaser.jpg s3://$(S3_BUCKET)/teaser.jpg --acl=public-read --region=us-east-1
 
 tiles: output/wards-mayor.mbtiles output/wards-council.mbtiles output/precincts-mayor.mbtiles output/precincts-council.mbtiles
