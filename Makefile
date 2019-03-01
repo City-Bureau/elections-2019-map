@@ -17,6 +17,7 @@ deploy:
 	aws s3 cp style.json s3://$(S3_BUCKET)/style.json --acl=public-read --region=us-east-1
 	aws s3 cp council.html s3://$(S3_BUCKET)/council.html --acl=public-read --region=us-east-1
 	aws s3 cp style-council.json s3://$(S3_BUCKET)/style-council.json --acl=public-read --region=us-east-1
+	aws s3 cp teaser.jpg s3://$(S3_BUCKET)/teaser.jpg --acl=public-read --region=us-east-1
 	aws s3 cp ./council s3://$(S3_BUCKET)/council --recursive --acl=public-read --region=us-east-1
 
 tiles: output/wards.mbtiles output/precincts.mbtiles $(foreach ward,$(COUNCIL_WARDS),output/wards-$(ward).mbtiles output/precincts-$(ward).mbtiles)
