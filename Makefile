@@ -33,16 +33,19 @@ output/%.mbtiles: input/%.geojson
 output/council-name-map.json: input/raw-results.geojson
 	cat $< | python scripts/council_prop_map.py > $@
 
-input/wards-%.geojson: input/wards-%.csv
-	wget -q -O - 'https://data.cityofchicago.org/api/geospatial/sp34-6z76?method=export&format=GeoJSON' | \
-	mapshaper -i - -filter-fields ward \
+input/wards-%.geojson: input/wards-%.csv input/wards.geojson
+	mapshaper -i $(filter-out $<,$^) -filter-fields ward \
 	-join $< field-types=ward:str keys=ward,ward -o $@
 
 input/wards-%.csv: input/precincts-%.geojson
 	cat $< | python scripts/combine_precincts_wards.py > $@
 
-input/precincts-%.geojson: input/raw-results.geojson
-	cat $< | python scripts/process_results.py --$* > $@
+input/precincts-%.geojson: input/raw-results.geojson input/wards.geojson
+	mapshaper -i $< -clip $(filter-out $<,$^) -o - | \
+	python scripts/process_results.py --$* > $@
+
+input/wards.geojson:
+	wget -O $@ 'https://data.cityofchicago.org/api/geospatial/sp34-6z76?method=export&format=GeoJSON'
 
 input/raw-results.geojson:
 	wget -O $@ https://raw.githubusercontent.com/datamade/chicago-municipal-elections/master/data/municipal_general_2019.geojson
