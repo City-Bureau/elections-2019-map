@@ -12,7 +12,10 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "https://free.tilehosting.com/data/v3.json?key=O5S1vvXrAWrobL6R3FHs"
+      "maxzoom": 14,
+      "tiles": [
+        "https://s3.us-east-2.amazonaws.com/city-bureau-openmaptiles/{z}/{x}/{y}.pbf"
+      ]
     },
     "wards": {
       "type": "vector",
@@ -29,8 +32,8 @@
       ]
     }
   },
-  "sprite": "https://openmaptiles.github.io/klokantech-basic-gl-style/sprite",
-  "glyphs": "https://free.tilehosting.com/fonts/{fontstack}/{range}.pbf?key=O5S1vvXrAWrobL6R3FHs",
+  "sprite": "https://s3.us-east-2.amazonaws.com/city-bureau-openmaptiles/klokantech-basic/sprite",
+  "glyphs": "https://s3.us-east-2.amazonaws.com/city-bureau-openmaptiles/fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",
@@ -440,7 +443,7 @@
       "layout": {
         "text-field": "{housenumber}",
         "text-font": [
-          "Noto Sans Regular"
+          "Klokantech+Noto+Sans+Regular"
         ],
         "text-size": 10
       },
@@ -1516,7 +1519,7 @@
         "text-anchor": "top",
         "text-field": "{name:latin}\n{name:nonlatin}",
         "text-font": [
-          "Noto Sans Regular"
+          "Klokantech+Noto+Sans+Regular"
         ],
         "text-max-width": 8,
         "text-offset": [
@@ -1551,7 +1554,7 @@
         "text-anchor": "top",
         "text-field": "{name:latin}\n{name:nonlatin}",
         "text-font": [
-          "Noto Sans Regular"
+          "Klokantech+Noto+Sans+Regular"
         ],
         "text-max-width": 8,
         "text-offset": [
@@ -1583,7 +1586,7 @@
         "symbol-placement": "line",
         "text-field": "{name:latin} {name:nonlatin}",
         "text-font": [
-          "Noto Sans Regular"
+          "Klokantech+Noto+Sans+Regular"
         ],
         "text-letter-spacing": 0.1,
         "text-rotation-alignment": "map",
@@ -1648,7 +1651,7 @@
           ]
         },
         "text-font": [
-          "Noto Sans Regular"
+          "Klokantech+Noto+Sans+Regular"
         ],
         "text-field": "{name:latin}\n{name:nonlatin}",
         "text-transform": "none",
@@ -1686,7 +1689,7 @@
         "text-anchor": "center",
         "text-field": "{name:latin}\n{name:nonlatin}",
         "text-font": [
-          "Noto Sans Regular"
+          "Klokantech+Noto+Sans+Regular"
         ],
         "text-max-width": 6,
         "text-size": {
@@ -1732,7 +1735,7 @@
       "layout": {
         "text-field": "{name:latin}\n{name:nonlatin}",
         "text-font": [
-          "Noto Sans Regular"
+          "Klokantech+Noto+Sans+Regular"
         ],
         "text-max-width": 10,
         "text-size": {
@@ -1781,7 +1784,7 @@
       "layout": {
         "text-field": "{name:latin}",
         "text-font": [
-          "Noto Sans Regular"
+          "Klokantech+Noto+Sans+Regular"
         ],
         "text-max-width": 10,
         "text-size": {
@@ -1831,7 +1834,7 @@
       "layout": {
         "text-field": "{name:latin}",
         "text-font": [
-          "Noto Sans Bold"
+          "Klokantech+Noto+Sans+Bold"
         ],
         "text-max-width": 10,
         "text-size": {
